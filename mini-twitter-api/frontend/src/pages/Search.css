@@ -1,0 +1,23 @@
+.hashtags-section {
+  margin-bottom: 30px;
+}
+
+.hashtags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.hashtag-card {
+  padding: 8px 15px;
+  background-color: #e8f5fe;
+  color: #1da1f2;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.hashtag-card:hover {
+  background-color: #d1e8f7;
+}

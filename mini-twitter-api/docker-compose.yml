@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  web:
+    env_file:
+      - .env
+    build: .
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=your_secret_key
+      - POSTGRES_DB=mini_twitter
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - REDIS_URL=redis://redis:6379/0
+      - REDIS_HOST=redis
+      - REACT_APP_API_URL=${REACT_APP_API_URL:-http://localhost:3000}
+      # Only set these if they are not empty
+      - napi_a1rr0z660zpwblab1a8xycroojcxxm2o8d3us3n439jamea84wit5sxvcfqlu054=${napi_a1rr0z660zpwblab1a8xycroojcxxm2o8d3us3n439jamea84wit5sxvcfqlu054:-}
+      - miniTwitterProject=${miniTwitterProject:-}
+    restart: on-failure
+    command: bash -c "python manage.py makemigrations users posts notifications direct_messages && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+
+  db:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=mini_twitter
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:6
+    ports:
+      - "6379:6379"
+
+  celery:
+    build: .
+    volumes:
+      - .:/app
+    depends_on:
+      - web
+      - redis
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=your_secret_key
+      - POSTGRES_DB=mini_twitter
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - REDIS_URL=redis://redis:6379/0
+      - REDIS_HOST=redis
+      - REACT_APP_API_URL=${REACT_APP_API_URL:-http://localhost:3000}
+      # Only set these if they are not empty
+      - napi_a1rr0z660zpwblab1a8xycroojcxxm2o8d3us3n439jamea84wit5sxvcfqlu054=${napi_a1rr0z660zpwblab1a8xycroojcxxm2o8d3us3n439jamea84wit5sxvcfqlu054:-}
+      - miniTwitterProject=${miniTwitterProject:-}
+    restart: on-failure
+    command: bash -c "sleep 10 && celery -A mini_twitter worker -l info"
+
+volumes:
+  postgres_data:

@@ -1,0 +1,9 @@
+.hashtag {
+  color: #1da1f2;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.hashtag:hover {
+  text-decoration: underline;
+}
